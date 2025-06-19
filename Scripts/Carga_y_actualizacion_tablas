@@ -1,0 +1,66 @@
+#Cargo datos en tabla usuario:
+INSERT INTO dbo.usuario (nombre, apellido, dni, telefono)
+VALUES 
+    ('Carla', 'Rodriguez',38000999, 44445555),
+    ('Juan', 'Perez', 37000999, 66667777),
+    ('Lucas', 'Lopez', 36000999, 88889999),
+    ('Ariel', 'Moyano', 35000999, 11110000),
+    ('Estefania', 'Torres', 34000999, 22223333),
+    ('Lourdes', 'Machuca', 33000999, 55554444);
+GO
+
+#Cargo datos en tabla cuenta:
+INSERT INTO dbo.cuenta ( id_usuario, numero_de_cuenta, tipo_de_cuenta)
+VALUES
+    (1,5420,'Debito'),
+    (2,5520,'Credito'),
+    (3,5320,'Caja ahorro'),
+    (4,5421,'Debito'),
+    (5,5522,'Credito'),
+    (6,5422,'Debito'),
+    (1,5521,'Credito'),
+    (3,5523,'Credito'),
+    (4,5321,'Caja ahorro'),
+    (5,5423,'Debito');
+GO
+
+#Actualizo la columna saldo_actual de la tabla cuenta (Se hace primero antes de cargar datos en la tabla transaccion)
+CREATE TRIGGER actualizar_saldo_actual
+ON dbo.transaccion
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.saldo_actual = c.saldo_actual + ISNULL(s.saldo_delta, 0)
+    FROM dbo.cuenta c
+    INNER JOIN (
+        SELECT 
+            id_cuenta,
+            SUM(CASE 
+                    WHEN tipo_de_transaccion = 'deposito' THEN monto
+                    WHEN tipo_de_transaccion = 'retiro' THEN -monto
+                    WHEN tipo_de_transaccion = 'transferencia' THEN -monto
+                    ELSE 0
+                END) AS saldo_delta
+        FROM inserted
+        GROUP BY id_cuenta
+    ) s ON c.id_cuenta = s.id_cuenta;
+END;
+GO
+
+#Cargo datos en la tabla transaccion:
+INSERT INTO dbo.transaccion (id_cuenta, fecha, tipo_de_transaccion, cuota, monto)
+VALUES 
+    (1, '2025-05-31', 'deposito', 1, 10000),
+    (2, '2025-04-15', 'transferencia', 1, 9000),
+    (3, '2025-02-15', 'retiro', 0, 8000),
+    (4, '2025-02-17', 'deposito', 1, 7000),
+    (5, '2025-01-06', 'retiro', 0, 6000),
+    (6, '2025-03-18', 'transferencia', 2, 5000),
+    (7, '2025-05-10', 'deposito', 1, 4000),
+    (8, '2025-04-02', 'deposito', 1, 3000),
+    (9, '2025-03-06', 'deposito', 1, 2000),
+    (10, '2025-03-06', 'transferencia', 1, 1000);
+GO

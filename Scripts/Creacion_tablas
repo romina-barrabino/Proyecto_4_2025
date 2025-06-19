@@ -1,0 +1,31 @@
+#Crear tabla usuario
+CREATE TABLE dbo.usuario (
+    id_usuario INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    nombre VARCHAR(15),
+    apellido VARCHAR(20),
+    dni INT,
+    telefono BIGINT
+);
+GO
+
+#Crear tabla cuenta
+CREATE TABLE dbo.cuenta (
+    id_cuenta INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    id_usuario INT,
+    numero_de_cuenta INT,
+    tipo_de_cuenta VARCHAR(20),
+    saldo_actual DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (id_usuario) REFERENCES dbo.usuario(id_usuario));
+GO
+
+#Crear tabla transaccion
+CREATE TABLE dbo.transaccion (
+    id_transaccion INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    id_cuenta INT,
+    fecha DATETIME,
+    tipo_de_transaccion VARCHAR(20),
+    cuota INT,
+    monto DECIMAL(15, 2),
+    FOREIGN KEY (id_cuenta) REFERENCES dbo.cuenta(id_cuenta));
+GO
+
