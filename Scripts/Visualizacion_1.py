@@ -1,3 +1,5 @@
+Me dio mal la ejecucion de la visualizacion.. faltan imagenes desde aca
+
 #Libreria
 import pyodbc
 import os
