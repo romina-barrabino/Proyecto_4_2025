@@ -1,3 +1,5 @@
+#Visualizacion 2 = Saldos_actuales por persona por mes
+
 #Libreria
 import pyodbc
 import os
@@ -38,15 +40,11 @@ if not conn:
     print("El script se detiene porque no se pudo establecer conexión.")
     exit()
 
-#Visualizacion 2 = Saldos_actuales por persona por mes
-
 #Exploracion de la tabla cuenta:
 print("Leyendo datos de la tabla cuenta...")
 df_cuenta = pd.read_sql("SELECT * FROM cuenta", conn)
-
-#Verificacion que se leyo la tabla correctamente:
-print("Datos cargados de la tabla:")
-print(df_cuenta.head())
+print("Datos cargados de la tabla:") #Verificacion
+print(df_cuenta.head()) #Verificacion
 
 #Transformacion:
 #a) Uso la tabla transaccion para recopilar las fechas:
@@ -55,19 +53,26 @@ df_transaccion = pd.read_sql("SELECT * FROM transaccion", conn)
 df_transaccion['fecha'] = pd.to_datetime(df_transaccion['fecha'])
 df_transaccion['mes'] = df_transaccion['fecha'].dt.to_period('M')
 
-#b) Ordeno por fecha para que el último saldo del mes sea correcto:
+#b) Unir con tabla cuenta con transaccion para obtener id_usuario
+df_transaccion = df_transaccion.merge(df_cuenta, on='id_cuenta', how='left')
+
+#c)  Ordeno por fecha para que el último saldo del mes sea correcto:
 df_transaccion.sort_values(by=['id_usuario', 'mes', 'fecha'], inplace=True)
 
-#c) Obtengo el último saldo mensual por usuario:
+#d) Obtengo el último saldo mensual por usuario:
 df_saldo_final = df_transaccion.groupby(['id_usuario', 'mes']).last().reset_index()
 
-#d) Cambio el nombre de saldo actual por saldo final mes:
+#e) Cambio el nombre de saldo actual por saldo final mes:
 df_saldo_final.rename(columns={'saldo_actual': 'saldo_final_mes'}, inplace=True)
+
+#f) Conversión de la nueva columna mes de numero a str
+df_saldo_final['mes'] = df_saldo_final['mes'].astype(str)
 
 #Comparo por mes el tipo de rotacion de los empleado
 print("Generando el grafico")
+sns.set_theme(style="darkgrid")
 plt.figure(figsize=(12, 6))
-sns.lineplot(data=df_saldo_final, x='mes', y='saldo_final_mes', hue='id_usuario', marker="o")
+sns.barplot(data=df_saldo_final, x='mes', y='saldo_final_mes', hue='id_usuario')
 plt.xticks(rotation=45)
 plt.title("Saldo mensual por persona")
 plt.xlabel("Mes")

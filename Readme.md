@@ -17,17 +17,17 @@ Transacciones (base de datos)
 
 # Estructura creada en Visual Studio:
 Proyecto_4_2025/
-├── Imagenes/                      # Carpeta con capturas de pantalla del proyecto
+├── Imagenes/                         # Carpeta con capturas de pantalla del proyecto
 ├── Scripts/
-│   ├── Creacion_tablas/          # Contiene scripts SQL para crear tablas
-│   ├── Carga_y_actualizacion_tablas/  # Scripts para cargar y actualizar datos de las tablas
-│   ├── Visualizacion_1/         
-│   ├── Visualizacion_2/          
-│   ├── Anomalias/                
-│   └── Clustering_y_sospechosos/ 
-├── Readme.md                     # Archivo de documentación del proyecto
-├── .env                          # Variables de entorno (usuarios y contraseñas SQL)
-└── .gitignore                    # Archivos y carpetas excluidos del repositorio
+│   ├── Creacion_tablas               # Contiene scripts SQL para crear tablas
+│   ├── Carga_y_actualizacion_tablas  # Scripts para cargar y actualizar datos de las tablas
+│   ├── Visualizacion_1         
+│   ├── Visualizacion_2          
+│   ├── Anomalias                
+│   └── Clustering_y_sospechosos 
+├── Readme.md                         # Archivo de documentación del proyecto
+├── .env                              # Variables de entorno (usuarios y contraseñas SQL)
+└── .gitignore                        # Archivos y carpetas excluidos del repositorio
 
 
 # Instalaciones y/o scripts para la terminal de Visual Studio: 

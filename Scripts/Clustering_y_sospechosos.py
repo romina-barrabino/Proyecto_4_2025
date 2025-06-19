@@ -57,16 +57,24 @@ X_scaled = scaler.fit_transform(X)
 
 #Aplicar clustering:
 kmeans = KMeans(n_clusters=3, random_state=42)
-df_transaccion['cluster'] = kmeans.fit_predict(X_scaled)
+df_transaccion['clusters'] = kmeans.fit_predict(X_scaled)
 
 #Visualización de cluster:
-sns.boxplot(x='cluster', y='monto', data=df_transaccion)
-plt.title('Distribución del monto por cluster')
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+sns.stripplot(data=df_transaccion, x='clusters', y='monto', jitter=True, palette='Set2')
+plt.title('Distribución de montos por tipo de clusters')
+plt.xlabel('Grupo de clusters')
+plt.ylabel('Monto')
 plt.show()
 
 #Visualizar las transacciones sospechosas:
-print("Transacciones sospechosas:")
-print(df_transaccion[df_transaccion['es_sospechoso']])
+promedios = df_transaccion.groupby('clusters')['monto'].mean()
+cluster_sospechoso = promedios.idxmax()
+print(f"Cluster sospechoso identificado: {cluster_sospechoso}")
+print(df_transaccion[df_transaccion['clusters'] == cluster_sospechoso])
 
 #Cierro la conexión al final:
 conn.close()

@@ -1,3 +1,5 @@
+#Anomalia = Analizo si se realizo un retiro de dinero alto.
+
 #Libreria
 import pyodbc
 import os
@@ -39,8 +41,6 @@ if not conn:
     print("El script se detiene porque no se pudo establecer conexión.")
     exit()
 
-#Anomalia = Analizo si se realizo un retiro de dinero alto.
-
 #Examino la tabla transaccion y creo un dataframe:
 query = """
 SELECT id_transaccion, tipo_de_transaccion, monto
@@ -62,7 +62,10 @@ df_retiros['es_anómalo'] = df_retiros['anomalía'] == -1
 
 #Verifico que detecte los retiros anomalos:
 print("Retiros anómalos detectados:")
-print(df_retiros[df_retiros['es_anómalo']])
+if df_retiros['es_anómalo'].sum() == 0:
+    print("0 anomalías detectadas.")
+else:
+    print(df_retiros[df_retiros['es_anómalo']])
 
 #Adjunto un detalle para tener en cuenta sobre los retiros:
 print("Estadísticas de los retiros:")

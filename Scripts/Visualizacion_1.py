@@ -1,4 +1,4 @@
-Me dio mal la ejecucion de la visualizacion.. faltan imagenes desde aca
+#Visualizacion 1 = Transacciones por persona por mes
 
 #Libreria
 import pyodbc
@@ -40,8 +40,6 @@ if not conn:
     print("El script se detiene porque no se pudo establecer conexión.")
     exit()
 
-#Visualizacion 1 = Transacciones por persona por mes
-
 #Exploracion de la tabla cuenta:
 print("Leyendo datos de la tabla cuenta...")
 df_cuenta = pd.read_sql("SELECT * FROM cuenta", conn)
@@ -61,16 +59,20 @@ df_transaccion = df_transaccion.merge(df_cuenta, on='id_cuenta', how='left')
 print("Procesamiento completado.")
 
 #Creacion de la columna movimiento para el grafico
-df_transaccion = df_transaccion.groupby(['id_usuario', 'meses']).agg({
+df_transaccion = df_transaccion.groupby(['id_usuario', 'mes']).agg({
     'monto': 'sum'
 }).reset_index()
 df_transaccion.rename(columns={'monto': 'movimiento'}, inplace=True)
+
+#Conversión de la nueva columna mes de numero a str
+df_transaccion['mes'] = df_transaccion['mes'].astype(str)
+df_transaccion['movimiento'] = pd.to_numeric(df_transaccion['movimiento'], errors='coerce')
 
 #Comparo los resultados de la encuesta por empleado
 print("Generando el gráfico")
 sns.set_theme(style="darkgrid")
 plt.figure(figsize=(14, 6))
-sns.lineplot(data=df_transaccion, x='meses', y='movimiento', hue='id_usuario', marker="o")
+sns.lineplot(data=df_transaccion, x='mes', y='movimiento', hue='id_usuario', marker="o",linestyle="")
 plt.title("Transacciones por persona por mes")
 plt.xticks(rotation=45)
 plt.tight_layout()
